@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+build/
+dist/
+*.txt
+*.inc
+*.m
+*.png
+**/geom_opti_TH_*/
+*.log
+*.db
