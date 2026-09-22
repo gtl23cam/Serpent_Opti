@@ -103,7 +103,7 @@ def run_case_monitored(inp_path, trial, n_nominal_steps):
     if proc.returncode != 0:
         print(f"[ERROR] {inp_path.name} failed (See {log_file.name})")
         raise optuna.TrialPruned(f"Serpent exited with code {proc.returncode}. This was optuna trial{trial.number}")
-    return f"[DONE] {inp_path.name}"
+    return ""
 
 def fetch_full_results(inp_path: Path, n_nominal_steps: int):
     """Parses nominal burnup results and optional branch data from completed run."""
