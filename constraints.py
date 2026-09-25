@@ -9,11 +9,11 @@ def constraints(trial,output_dir,currently_optimising=True):
     Satisfied: g_i <= 0 | Violated: g_i > 0
     Normalized so that g_i = +1.0 represents a standard, significant violation.
     """
-    NUM_CONSTRAINTS = 10
+    NUM_CONSTRAINTS = 11
 
     # Absolute Physics Limits
     KEFF_BOL_MIN = 1.00
-    # KEFF_BOL_MAX = 1.1
+    KEFF_BOL_MAX = 1.15
     KEFF_2_3_MIN = 1.00
     ROD_SUBCRIT_LIMIT = 0.9
     MIN_CRW_LIMIT_PCM = 3000.0
@@ -43,7 +43,7 @@ def constraints(trial,output_dir,currently_optimising=True):
 
     # 1. Core Keff Constraints
     g1_keff_bol_min = (KEFF_BOL_MIN - keff_bol) / SCALE_KEFF
-    # g2_keff_bol_max = (keff_bol - KEFF_BOL_MAX) / SCALE_KEFF
+    g2_keff_bol_max = (keff_bol - KEFF_BOL_MAX) / SCALE_KEFF
 
     # 2. Lifecycle 2/3 Keff Constraint
 
@@ -160,7 +160,7 @@ def constraints(trial,output_dir,currently_optimising=True):
 
     return [
         g1_keff_bol_min,
-        # g2_keff_bol_max,
+        g2_keff_bol_max,
         g3_keff_2_3,
         g4_hfp_mtc_max,
         g5_hfp_ftc_max,
