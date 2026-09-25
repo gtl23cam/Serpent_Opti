@@ -69,7 +69,7 @@ def resolve_fuels(
     gd_conc: float,
     t_fuel_hot: float = 900,
     t_fuel_cold: float = 500,
-    library_path: str = "/home/gtl23/optimisation/BA_opti/Final_code/mat_management/materials_library4.txt"
+    library_path: str = "../Serpent_Opti/mat_management/materials_library4.txt"
 ) -> tuple[list, bool]:
     """
     Returns (materials_list, has_gad_flag).
