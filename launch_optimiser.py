@@ -1,6 +1,6 @@
 # main.py
 import os
-THREADS_PER_WORKER = "7"
+THREADS_PER_WORKER = "6"
 os.environ["OMP_NUM_THREADS"] = THREADS_PER_WORKER
 os.environ["MKL_NUM_THREADS"] = THREADS_PER_WORKER
 os.environ["OPENBLAS_NUM_THREADS"] = THREADS_PER_WORKER
@@ -16,10 +16,10 @@ from constraints import constraints
 from evaluate_trial import create_and_evaluate
 from utils import get_trial_failures
 
-N_WORKERS = 5  # parallel Optuna trials
-THREADS_PER_WORKER = 7  # OpenMP threads per Serpent instance - needs to match in opti utils to calculate what specific core to run on
-name = "geom_opti_TH_12"
-notes = "Exactly same settings as opti_TH_4, just with the new code base and to check change in convergence"
+N_WORKERS = 6  # parallel Optuna trials
+THREADS_PER_WORKER = 6  # OpenMP threads per Serpent instance - needs to match in opti utils to calculate what specific core to run on
+name = "geom_opti_TH_14"
+notes = "new geometric sampling but with a keff bol constraint at 1.15"
 Path(name).mkdir
 OUTPUT_DIR = Path("Opti_runs") /Path(name)
 
@@ -44,27 +44,25 @@ if __name__ == "__main__":
     sampler = TPESampler(
         multivariate=True,
         group=True,
-        n_startup_trials=20,
+        n_startup_trials=50,
         n_ei_candidates=100,
         constant_liar=True,
         constraints_func=bound_constraints
     )
 
+    storage = optuna.storages.RDBStorage(
+    url="sqlite:///optuna_database/serpent_optuna.db",
+    engine_kwargs={"connect_args": {"timeout": 60}},
+)
+
     study = optuna.create_study(
         study_name=name,
-        storage="optuna_database/sqlite:///serpent_optuna.db",
+        storage=storage,
         direction="minimize",
         sampler=sampler,
+        load_if_exists=True
     )
     study.set_user_attr("notes",notes)
-
-## for adding more trials to a study after completion, uncomment the following lines and comment out the above study creation line.
-
-    # study = optuna.load_study(
-    #     study_name=name,
-    #     storage="sqlite:///serpent_optuna.db",
-    #     sampler=sampler,
-    # )
 
     study.enqueue_trial(
     {
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     }
 )
 
-    study.optimize(bound_objective, n_trials=250, n_jobs=N_WORKERS) # type: ignore
+    study.optimize(bound_objective, n_trials=1000, n_jobs=N_WORKERS) # type: ignore
 
     completed = study.get_trials(states=[TrialState.COMPLETE])
     pruned = study.get_trials(states=[TrialState.PRUNED])
