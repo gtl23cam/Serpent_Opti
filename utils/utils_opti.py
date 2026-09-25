@@ -19,7 +19,7 @@ rc["serpentVersion"] = "2.1.32"
 from .case_rendering import render_main_input, parse_branches_inc, render_branches
 
 SERPENT_CMD = os.path.expandvars("$HOME/compile.2.1.32/sss2")
-OMP_THREADS = "7"  # OpenMP threads assigned per case, should ideally match number in main
+OMP_THREADS = "6"  # OpenMP threads assigned per case, should ideally match number in main
 
 _DET_FILE_RE = re.compile(r"det(\d+)(?:_?b(\d+))?\.m$", re.IGNORECASE) # Supports both det1b1.m and det1_b1.m formats
 
