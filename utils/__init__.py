@@ -40,6 +40,8 @@ from .utils_geom import (
     carve_two_categories_test,
     sample_guide_and_gd,
     sample_guide_and_gd_test,
+    sample_bipolar_priority,
+    sample_guide_and_gd_bi
 )
 
 from .case_building import build_branches, build_case
@@ -72,8 +74,6 @@ from .utils_TH import (
     thermal_hydraulic_estimate,
     check_DNBR_and_centerline_temp,
 )
-
-from .utils_unused import run_case
 
 DNBR_LIMIT = 1.3
 CENTERLINE_TEMP_LIMIT = 2400
@@ -113,6 +113,8 @@ __all__ = [
     "carve_two_categories",
     "carve_two_categories_test",
     "sample_guide_and_gd",
+    "sample_guide_and_gd_bi",
+    "sample_bipolar_priority",
     "sample_guide_and_gd_test",
     "build_branches",
     "build_case",

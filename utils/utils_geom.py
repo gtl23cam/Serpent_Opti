@@ -264,6 +264,64 @@ def sample_guide_and_gd(
     )
     return gt_axis_idx, gt_interior_idx, gd_axis_idx, gd_interior_idx
 
+def sample_bipolar_priority(trial, coords, n_gt, n_gd, prefix):
+    """
+    Samples guide tubes and Gd pins out of `coords` without collisions, 
+    cascading shifts, or permutation noise.
+    
+    Highest priority scores become Guide Tubes.
+    Lowest priority scores become Gadolinium pins.
+    """
+    pool_size = len(coords)
+    
+    # Safety cap so GT + Gd never exceeds physical pool size
+    n_gt = min(n_gt, pool_size)
+    n_gd = min(n_gd, pool_size - n_gt)
+    
+    # 1. ALWAYS sample exactly 1 static parameter per lattice slot in this pool.
+    # Parameter 'axis_slot_0' will ALWAYS refer to coords[0], regardless of trial.
+    priorities = [
+        trial.suggest_float(f"{prefix}_slot_{i}", 0.0, 1.0)
+        for i in range(pool_size)
+    ]
+    
+    # 2. Sort slot indices (0 to pool_size-1) by their assigned priority score
+    # Ascending order: lowest scores first, highest scores last
+    sorted_slots = sorted(range(pool_size), key=lambda i: priorities[i])
+    
+    # 3. Lowest scores claim Gd pins
+    gd_idx = sorted_slots[:n_gd] if n_gd > 0 else []
+    
+    # 4. Highest scores claim Guide Tubes
+    gt_idx = sorted_slots[-n_gt:] if n_gt > 0 else []
+    
+    # Return strictly increasing index lists for clean downstream string/lattice building
+    return sorted(gt_idx), sorted(gd_idx)
+
+def sample_guide_and_gd_bi(
+    trial, axis_coords, interior_coords, max_gt_picks=4, max_gd_picks=4
+):
+    """
+    Sample guide-tube and Gd pin counts/positions for both symmetry classes.
+    Guarantees zero cell overlap and zero cascading shifts.
+    """
+    n_gt_axis = trial.suggest_int("n_gt_axis", 0, max_gt_picks)
+    n_gt_interior = trial.suggest_int("n_gt_interior", 0, max_gt_picks)
+    n_gd_axis = trial.suggest_int("n_gd_axis", 0, max_gd_picks)
+    n_gd_interior = trial.suggest_int("n_gd_interior", 0, max_gd_picks)
+
+    # Sample Axis slots (13 stationary parameters: axis_slot_0 to axis_slot_12)
+    gt_axis_idx, gd_axis_idx = sample_bipolar_priority(
+        trial, axis_coords, n_gt_axis, n_gd_axis, prefix="axis"
+    )
+
+    # Sample Interior slots (26 stationary parameters: interior_slot_0 to interior_slot_25)
+    gt_interior_idx, gd_interior_idx = sample_bipolar_priority(
+        trial, interior_coords, n_gt_interior, n_gd_interior, prefix="interior"
+    )
+
+    return gt_axis_idx, gt_interior_idx, gd_axis_idx, gd_interior_idx
+
 def sample_guide_and_gd_test(
     axis_coords, interior_coords, max_gt_picks=MAX_PICKS, max_gd_picks=MAX_PICKS
 ):

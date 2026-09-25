@@ -11,6 +11,7 @@ from utils import (
     get_partitioned_lattice_coords,
     build_geometry17x17,
     sample_guide_and_gd,
+    sample_guide_and_gd_bi,
     build_case,
     thermal_hydraulic_estimate,
     wrapped_sss2,
@@ -94,7 +95,7 @@ def create_and_evaluate(
 
     ## Geometry sampling done here
     axis_coords, interior_coords = get_partitioned_lattice_coords()
-    gt_axis_idx, gt_interior_idx, gd_axis_idx, gd_interior_idx = sample_guide_and_gd(
+    gt_axis_idx, gt_interior_idx, gd_axis_idx, gd_interior_idx = sample_guide_and_gd_bi(
         trial, axis_coords, interior_coords, max_gd_picks=4, max_gt_picks=4)
     total_guide_tubes = (len(gt_axis_idx) * 4) + (len(gt_interior_idx) * 8)
     total_assembly_gd_pins = (len(gd_axis_idx) * 4) + (len(gd_interior_idx) * 8)
